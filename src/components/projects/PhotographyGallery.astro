@@ -1,0 +1,108 @@
+---
+/**
+ * Day-paired layout. Each entry = one day = up to two photos (the one
+ * Pranika took + the one a stranger took with her camera). Each day's
+ * two photos sit side by side in a 2-col grid. The days themselves
+ * stack one per row on mobile (2 photos per row) and two per row on
+ * sm+ (4 photos per row). On sm+ each day is a row-spanning subgrid,
+ * so the two days in a row share header/photo row tracks — if one
+ * day's date+location wraps to extra lines, both days' photo grids
+ * still start at the same height. Each photo fills its 1:1 slot via
+ * object-cover; the full uncropped image is shown in the Lightbox
+ * on click, along with the per-image `caption`.
+ */
+import type { CollectionEntry } from 'astro:content';
+import Placeholder from '../Placeholder.astro';
+
+interface Props {
+  entries: CollectionEntry<'projects'>[];
+}
+
+const { entries } = Astro.props;
+
+const days = [...entries].sort((a, b) => {
+  const ad = a.data.date?.valueOf() ?? 0;
+  const bd = b.data.date?.valueOf() ?? 0;
+  return bd - ad;
+});
+
+// timeZone: 'UTC' keeps date-only frontmatter dates from rolling back a
+// day in local timezones behind UTC.
+const dateFmt = new Intl.DateTimeFormat('en-US', {
+  month: 'long',
+  day: 'numeric',
+  year: 'numeric',
+  timeZone: 'UTC',
+});
+---
+
+{
+  days.length === 0 ? (
+    <Placeholder
+      label="Photographs will appear here — paired by day."
+      ratio="3/1"
+      tone="cool"
+    />
+  ) : (
+    <div class="grid grid-cols-1 gap-x-8 gap-y-12 sm:grid-cols-2 sm:gap-y-14">
+      {days.map((day) => (
+        <article class="sm:row-span-2 sm:grid sm:grid-rows-subgrid sm:gap-y-3">
+          {day.data.date && (
+            <p class="mb-3 font-mono text-xs uppercase tracking-[0.2em] text-terracotta-600 sm:mb-0 dark:text-terracotta-300">
+              <time datetime={day.data.date.toISOString()}>
+                {dateFmt.format(day.data.date)}
+              </time>
+              {day.data.location && (
+                <>
+                  <span class="mx-2 text-terracotta-600/50 dark:text-terracotta-300/50">|</span>
+                  <span>{day.data.location}</span>
+                </>
+              )}
+            </p>
+          )}
+          <div
+            class="grid grid-cols-2 gap-3"
+            id={`photography-${day.id.split('/').pop()}`}
+          >
+            {day.data.images.slice(0, 2).map((img) => {
+              // Lightbox caption reads as a credit line: the title in
+              // quotes followed by the author — e.g. "Art, Three Ways"
+              // - Pranika. The author also shows as a corner chip on
+              // the thumbnail.
+              const captionLine = img.caption
+                ? img.credit
+                  ? `"${img.caption}" - ${img.credit}`
+                  : `"${img.caption}"`
+                : '';
+              return img.src ? (
+                <button
+                  type="button"
+                  aria-label={`Open: ${img.alt}`}
+                  data-lightbox-src={img.src}
+                  data-lightbox-alt={img.alt}
+                  data-lightbox-caption={captionLine}
+                  class="group relative block aspect-square w-full overflow-hidden rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-terracotta-500"
+                >
+                  <img
+                    src={img.src}
+                    alt={img.alt}
+                    loading="lazy"
+                    decoding="async"
+                    class="block h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+                  />
+                  {img.credit && (
+                    <span class="absolute bottom-2 right-2 rounded-sm bg-ink/55 px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-[0.18em] text-cream backdrop-blur-sm">
+                      © {img.credit}
+                    </span>
+                  )}
+                </button>
+              ) : (
+                <Placeholder label={img.alt} ratio="1/1" tone="cool" />
+              );
+            })}
+          </div>
+        </article>
+      ))}
+    </div>
+  )
+}

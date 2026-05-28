@@ -1,0 +1,97 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const all = await getCollection('projects');
+const drawerCount = all.filter(
+  (p) => p.data.kind === 'sketches' || p.data.kind === 'craft',
+).length;
+const summerCount = all.filter((p) => p.data.kind === 'photography').length;
+
+const sections = [
+  {
+    href: '/projects/of-hands-and-hours',
+    title: 'Of hands and hours',
+    meta: `${drawerCount} ${drawerCount === 1 ? 'entry' : 'entries'}`,
+    kind: 'Art',
+    description:
+      'Sketchbook pages, paintings, things made by hand — usually a line, a face, a feeling I needed to put somewhere.',
+  },
+  {
+    href: '/projects/to-see-and-to-see-again',
+    title: 'To See, and to See Again.',
+    meta: `${summerCount} ${summerCount === 1 ? 'day' : 'days'}`,
+    kind: 'Photography',
+    description:
+      'One a day, more or less. What two people see in the same place at the same time.',
+  },
+  {
+    href: '/projects/a-slow-conversation',
+    title: 'A Slow Conversation.',
+    meta: '3 modes',
+    kind: 'Generative Art',
+    description:
+      'An interactive generative sketchbook — you draw, it draws back.',
+  },
+] as const;
+---
+
+<BaseLayout
+  title="Projects"
+  description="Sketches, paintings, photographs and other things by Pranika Jain."
+>
+  <article class="mx-auto max-w-page px-5 py-16 sm:px-8 sm:py-24">
+    <header class="mb-12">
+      <p
+        class="flex items-center gap-3 font-mono text-xs uppercase tracking-[0.3em] text-terracotta-600 dark:text-terracotta-300"
+      >
+        <svg viewBox="0 0 16 16" aria-hidden="true" class="h-3.5 w-3.5">
+          <circle
+            cx="8"
+            cy="8"
+            r="6"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.6"></circle>
+          <circle cx="8" cy="8" r="2" fill="currentColor"></circle>
+        </svg>
+        Projects
+      </p>
+      <p
+        class="mt-5 max-w-prose font-sans text-lg text-ink-soft dark:text-cream-soft"
+      >
+        Things that wouldn't leave me alone.
+      </p>
+    </header>
+
+    <ul class="divide-y divide-ink/10 dark:divide-cream/10">
+      {
+        sections.map((s) => (
+          <li>
+            <a
+              href={s.href}
+              class="group grid gap-3 py-7 sm:grid-cols-[12rem_1fr] sm:items-baseline sm:gap-8"
+            >
+              <div class="space-y-1">
+                <p class="font-mono text-xs uppercase tracking-[0.18em] text-ink-dim dark:text-cream-soft/70">
+                  {s.kind}
+                </p>
+                <p class="font-mono text-[10px] uppercase tracking-widest text-ink-dim/70 dark:text-cream-soft/50">
+                  {s.meta}
+                </p>
+              </div>
+              <div>
+                <h2 class="font-display text-2xl text-ink transition-colors group-hover:text-terracotta-600 dark:text-cream dark:group-hover:text-terracotta-200">
+                  {s.title}
+                </h2>
+                <p class="mt-2 font-sans text-ink-soft dark:text-cream-soft/85">
+                  {s.description}
+                </p>
+              </div>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </article>
+</BaseLayout>

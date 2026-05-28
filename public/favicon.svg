@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Terracotta ❧ florette on transparent background — matches the
+       ornament beside the hero name. Glyph fills the icon edge-to-edge. -->
+  <text x="32" y="32" text-anchor="middle" dominant-baseline="central" font-family="Georgia, ui-serif, serif" font-size="60" fill="#D2691E">&#x2767;</text>
+</svg>

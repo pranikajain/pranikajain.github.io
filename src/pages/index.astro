@@ -1,0 +1,336 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Placeholder from '../components/Placeholder.astro';
+
+const allPosts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+const latestPosts = allPosts.slice(0, 3);
+
+// Home-page tiles map one-to-one to the dedicated project pages. Title =
+// section name, description = a per-section line. Adding a third section →
+// add a third tile here and create the matching /projects/<slug>.astro.
+const tiles = [
+  {
+    title: 'Of hands and hours',
+    href: '/projects/of-hands-and-hours',
+    kind: 'Art',
+    description:
+      'Sketchbook pages, paintings, things made by hand — usually a line, a face, a feeling I needed to put somewhere.',
+  },
+  {
+    title: 'To See, and to See Again.',
+    href: '/projects/to-see-and-to-see-again',
+    kind: 'Photography',
+    description:
+      'One a day, more or less. What two people see in the same place at the same time.',
+  },
+  {
+    title: 'A Slow Conversation.',
+    href: '/projects/a-slow-conversation',
+    kind: 'Generative Art',
+    description:
+      'An interactive generative sketchbook — you draw, it draws back.',
+  },
+] as const;
+
+// timeZone: 'UTC' keeps date-only pubDates from rolling back a day in
+// local timezones behind UTC (e.g. 2026-01-11 → "Jan 10" in PST).
+const dateFmt = new Intl.DateTimeFormat('en-US', {
+  month: 'short',
+  day: 'numeric',
+  year: 'numeric',
+  timeZone: 'UTC',
+});
+---
+
+<BaseLayout
+  title="Pranika Jain"
+  description="Software engineer for ten years, now in NYC making creative work the primary practice."
+>
+  {/* Hero */}
+  <section
+    class="relative mx-auto max-w-page px-5 pt-20 pb-24 sm:px-8 sm:pt-32 sm:pb-36"
+  >
+    {/* MOBILE hero — the portrait floats top-right; "Hi … for longer"
+        sits to its left and "Now in New York City …" floats around it.
+        Hidden on sm+, where the desktop layout below takes over. */}
+    <div class="sm:hidden">
+      <div class="relative float-right mb-3 ml-5 w-28">
+        <img
+          src="/images/profile/avatar.jpg"
+          alt="Pranika — black-and-white portrait, smiling at the camera"
+          width="1100"
+          height="1956"
+          loading="eager"
+          class="aspect-[4/5] w-full rounded-2xl object-cover object-top shadow-soft ring-1 ring-ink/10 dark:ring-cream/10"
+        />
+        <svg
+          aria-hidden="true"
+          viewBox="0 0 40 40"
+          class="absolute -right-2 -bottom-2 h-9 w-9 text-ink/70 dark:text-cream/70"
+        >
+          <path
+            d="M20,4 L20,36 M4,20 L36,20 M9,9 L31,31 M31,9 L9,31"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.4"
+            stroke-linecap="round"
+          ></path>
+        </svg>
+      </div>
+
+      <p
+        class="mb-3 font-mono text-xs uppercase tracking-[0.35em] text-terracotta-600 dark:text-terracotta-300"
+      >
+        Hi &mdash; I'm
+      </p>
+      <h1
+        class="font-display text-3xl leading-[1] tracking-tight text-ink dark:text-cream"
+      >
+        <span class="italic text-terracotta-600 dark:text-terracotta-300">
+          Pranika
+        </span>
+        Jain.
+        <span
+          aria-hidden="true"
+          class="inline-block translate-y-[-0.35em] pl-1 font-sans text-2xl text-terracotta-500"
+          >&#x2767;</span
+        >
+      </h1>
+      <p
+        class="mt-6 font-sans text-lg leading-relaxed text-ink-soft dark:text-cream-soft"
+      >
+        Engineer for a decade. Sketching for longer.
+      </p>
+      <p
+        class="mt-2 font-sans text-lg leading-relaxed text-ink-soft dark:text-cream-soft"
+      >
+        Now in New York City, in the
+        <em class="font-display text-terracotta-600 dark:text-terracotta-300"
+          >in-between</em
+        >, and curious about it.
+      </p>
+      <div class="clear-both flex flex-wrap gap-3 pt-6">
+        <a
+          href="/about"
+          class="group link-wobble inline-flex items-center gap-2 font-sans text-sm text-ink dark:text-cream"
+        >
+          Know more
+          <span
+            aria-hidden="true"
+            class="transition-transform group-hover:translate-x-0.5"
+            >&rarr;</span
+          >
+        </a>
+      </div>
+    </div>
+
+    {/* DESKTOP hero — original two-column layout, unchanged. Hidden on
+        mobile, where the float layout above takes over. */}
+    <div
+      class="hidden items-center sm:grid sm:grid-cols-[1.35fr_1fr] sm:gap-20"
+    >
+      <div class="space-y-7">
+        <p
+          class="font-mono text-xs uppercase tracking-[0.35em] text-terracotta-600 dark:text-terracotta-300"
+        >
+          Hi &mdash; I'm
+        </p>
+        <h1
+          class="font-display text-6xl leading-[1] tracking-tight text-ink dark:text-cream"
+        >
+          <span class="italic text-terracotta-600 dark:text-terracotta-300">
+            Pranika
+          </span>
+          Jain.
+          <span
+            aria-hidden="true"
+            class="inline-block translate-y-[-0.35em] pl-2 font-sans text-3xl text-terracotta-500"
+            >&#x2767;</span
+          >
+        </h1>
+        <p
+          class="max-w-prose font-sans text-xl leading-relaxed text-ink-soft dark:text-cream-soft"
+        >
+          Engineer for a decade. Sketching for longer. Now in New York City,
+          in the
+          <em class="font-display text-terracotta-600 dark:text-terracotta-300"
+            >in-between</em
+          >, and curious about it.
+        </p>
+        <div class="flex flex-wrap gap-3 pt-2">
+          <a
+            href="/about"
+            class="group link-wobble inline-flex items-center gap-2 font-sans text-sm text-ink dark:text-cream"
+          >
+            Know more
+            <span
+              aria-hidden="true"
+              class="transition-transform group-hover:translate-x-0.5"
+              >&rarr;</span
+            >
+          </a>
+        </div>
+      </div>
+
+      <div class="relative mx-auto w-full max-w-xs sm:ml-auto">
+        <img
+          src="/images/profile/avatar.jpg"
+          alt="Pranika — black-and-white portrait, smiling at the camera"
+          width="1100"
+          height="1956"
+          loading="eager"
+          class="aspect-[4/5] w-full rounded-3xl object-cover object-top shadow-soft ring-1 ring-ink/10 dark:ring-cream/10"
+        />
+
+        {/* Inkmark accent — a tiny hand-drawn cross/spark */}
+        <svg
+          aria-hidden="true"
+          viewBox="0 0 40 40"
+          class="absolute -bottom-2 -left-2 h-12 w-12 text-ink/70 dark:text-cream/70"
+        >
+          <path
+            d="M20,4 L20,36 M4,20 L36,20 M9,9 L31,31 M31,9 L9,31"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.4"
+            stroke-linecap="round"
+          ></path>
+        </svg>
+      </div>
+    </div>
+
+    {/* Scroll cue — small, hand-drawn */}
+    <a
+      href="#projects"
+      aria-label="Scroll to projects"
+      class="absolute bottom-4 left-1/2 hidden -translate-x-1/2 font-mono text-[10px] uppercase tracking-[0.3em] text-ink-dim sm:block dark:text-cream-soft/60"
+    >
+      <span class="block">scroll</span>
+      <svg viewBox="0 0 12 22" class="mx-auto mt-1 h-5 w-3" aria-hidden="true">
+        <path
+          d="M6,2 L6,18 M2,14 L6,18 L10,14"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        ></path>
+      </svg>
+    </a>
+  </section>
+
+  {/* Tiles — one per projects tab. */}
+  <section id="projects" class="mx-auto max-w-page px-5 pb-20 sm:px-8">
+    <header class="mb-10 flex items-baseline justify-between gap-6">
+      <h2
+        class="flex items-baseline gap-3 font-display text-3xl text-ink sm:text-4xl dark:text-cream"
+      >
+        <svg
+          aria-hidden="true"
+          viewBox="0 0 24 24"
+          class="h-5 w-5 shrink-0 -translate-y-0.5 text-terracotta-500"
+        >
+          <path
+            d="M12 2 L14 10 L22 12 L14 14 L12 22 L10 14 L2 12 L10 10 Z"
+            fill="currentColor"
+          ></path>
+        </svg>
+        <span><span class="italic">From</span> the studio</span>
+      </h2>
+      <a
+        href="/projects"
+        class="link-wobble font-sans text-sm text-ink dark:text-cream"
+        >All projects &rarr;</a
+      >
+    </header>
+
+    <ul class="divide-y divide-ink/10 dark:divide-cream/10">
+      {
+        tiles.map((tile) => (
+          <li>
+            <a
+              href={tile.href}
+              class="group grid gap-2 py-5 sm:grid-cols-[10rem_1fr] sm:items-baseline sm:gap-6"
+            >
+              <p class="font-mono text-xs uppercase tracking-[0.18em] text-ink-dim dark:text-cream-soft/70">
+                {tile.kind}
+              </p>
+              <div>
+                <h3 class="font-display text-xl text-ink transition-colors group-hover:text-terracotta-600 dark:text-cream dark:group-hover:text-terracotta-200">
+                  {tile.title}
+                </h3>
+                <p class="mt-1 font-sans text-sm text-ink-soft dark:text-cream-soft/85">
+                  {tile.description}
+                </p>
+              </div>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  {/* Latest posts */}
+  <section class="mx-auto max-w-page px-5 pb-24 sm:px-8">
+    <header class="mb-10 flex items-baseline justify-between gap-6">
+      <h2
+        class="flex items-baseline gap-3 font-display text-3xl text-ink sm:text-4xl dark:text-cream"
+      >
+        <svg
+          aria-hidden="true"
+          viewBox="0 0 24 24"
+          class="h-5 w-5 shrink-0 -translate-y-0.5 text-sage-500"
+        >
+          <circle cx="12" cy="12" r="7" fill="none" stroke="currentColor" stroke-width="2.4"></circle>
+        </svg>
+        <span><span class="italic">From</span> the journal</span>
+      </h2>
+      <a
+        href="/blog"
+        class="link-wobble font-sans text-sm text-ink dark:text-cream"
+        >All posts &rarr;</a
+      >
+    </header>
+
+    {
+      latestPosts.length === 0 ? (
+        <Placeholder
+          label="Latest blog posts will appear here once published."
+          ratio="3/1"
+          tone="neutral"
+        />
+      ) : (
+        <ul class="divide-y divide-ink/10 dark:divide-cream/10">
+          {latestPosts.map((post) => (
+            <li>
+              <a
+                href={`/blog/${post.id}`}
+                class="group grid gap-2 py-5 sm:grid-cols-[10rem_1fr] sm:items-baseline sm:gap-6"
+              >
+                <time
+                  datetime={post.data.pubDate.toISOString()}
+                  class="font-mono text-xs uppercase tracking-[0.18em] text-ink-dim dark:text-cream-soft/70"
+                >
+                  {dateFmt.format(post.data.pubDate)}
+                </time>
+                <div>
+                  <h3 class="font-display text-xl text-ink transition-colors group-hover:text-terracotta-600 dark:text-cream dark:group-hover:text-terracotta-200">
+                    {post.data.title}
+                  </h3>
+                  {post.data.description && (
+                    <p class="mt-1 font-sans text-sm text-ink-soft dark:text-cream-soft/85">
+                      {post.data.description}
+                    </p>
+                  )}
+                </div>
+              </a>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+  </section>
+</BaseLayout>

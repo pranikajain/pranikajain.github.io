@@ -1,0 +1,94 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Placeholder from '../../components/Placeholder.astro';
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+
+// timeZone: 'UTC' keeps date-only pubDates from rolling back a day in
+// local timezones behind UTC (e.g. 2026-01-11 → "January 10" in PST).
+const dateFmt = new Intl.DateTimeFormat('en-US', {
+  month: 'long',
+  day: 'numeric',
+  year: 'numeric',
+  timeZone: 'UTC',
+});
+
+function readingTime(body: string | undefined): string {
+  if (!body) return '1 min';
+  const words = body.split(/\s+/).filter(Boolean).length;
+  return `${Math.max(1, Math.round(words / 220))} min`;
+}
+---
+
+<BaseLayout title="Blog" description="Notes by Pranika Jain.">
+  <article class="mx-auto max-w-page px-5 py-16 sm:px-8 sm:py-24">
+    <header class="mb-12">
+      <p
+        class="flex items-center gap-3 font-mono text-xs uppercase tracking-[0.3em] text-terracotta-600 dark:text-terracotta-300"
+      >
+        <svg viewBox="0 0 16 16" aria-hidden="true" class="h-3 w-5">
+          <path
+            d="M1,8 Q4,3 8,8 T15,8"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.6"
+            stroke-linecap="round"
+          ></path>
+        </svg>
+        Blog
+      </p>
+      <p
+        class="mt-5 max-w-prose font-sans text-lg text-ink-soft dark:text-cream-soft"
+      >
+        Half-formed thoughts on engineering, drawing, and the bit in the
+        middle.
+      </p>
+    </header>
+
+    {
+      posts.length === 0 ? (
+        <Placeholder
+          label="Posts will appear here once published."
+          ratio="3/1"
+          tone="neutral"
+        />
+      ) : (
+        <ul class="divide-y divide-ink/10 dark:divide-cream/10">
+          {posts.map((post) => (
+            <li>
+              <a
+                href={`/blog/${post.id}`}
+                class="group grid gap-3 py-7 sm:grid-cols-[12rem_1fr] sm:items-baseline sm:gap-8"
+              >
+                <div class="space-y-1">
+                  <time
+                    datetime={post.data.pubDate.toISOString()}
+                    class="font-mono text-xs uppercase tracking-[0.18em] text-ink-dim dark:text-cream-soft/70"
+                  >
+                    {dateFmt.format(post.data.pubDate)}
+                  </time>
+                  <p class="font-mono text-[10px] uppercase tracking-widest text-ink-dim/70 dark:text-cream-soft/50">
+                    {readingTime(post.body)}
+                  </p>
+                </div>
+                <div>
+                  <h2 class="font-display text-2xl text-ink transition-colors group-hover:text-terracotta-600 dark:text-cream dark:group-hover:text-terracotta-200">
+                    {post.data.title}
+                  </h2>
+                  {post.data.description && (
+                    <p class="mt-2 font-sans text-ink-soft dark:text-cream-soft/85">
+                      {post.data.description}
+                    </p>
+                  )}
+                </div>
+              </a>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+  </article>
+</BaseLayout>

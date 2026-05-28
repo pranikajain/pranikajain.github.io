@@ -1,0 +1,51 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Placeholder from '../components/Placeholder.astro';
+---
+
+<BaseLayout title="Lost page · Pranika Jain" description="This page wandered off.">
+  <section
+    class="relative mx-auto flex min-h-[70vh] max-w-page flex-col items-center justify-center px-5 py-20 text-center sm:px-8"
+  >
+    {/* Tiny dots — small delight allowed by spec; respects reduced-motion via global rule. */}
+    <div aria-hidden="true" class="pointer-events-none absolute inset-0 -z-10">
+      <span class="absolute left-[12%] top-[18%] h-1.5 w-1.5 rounded-full bg-terracotta-400/60"></span>
+      <span class="absolute left-[78%] top-[22%] h-1 w-1 rounded-full bg-ink/30 dark:bg-cream/30"></span>
+      <span class="absolute left-[28%] top-[68%] h-1 w-1 rounded-full bg-terracotta-500/70"></span>
+      <span class="absolute left-[64%] top-[78%] h-2 w-2 rounded-full bg-terracotta-300/50"></span>
+      <span class="absolute left-[44%] top-[12%] h-1 w-1 rounded-full bg-ink/30 dark:bg-cream/40"></span>
+      <span class="absolute left-[88%] top-[58%] h-1.5 w-1.5 rounded-full bg-terracotta-400/60"></span>
+      <span class="absolute left-[8%] top-[48%] h-1 w-1 rounded-full bg-ink/25 dark:bg-cream/25"></span>
+    </div>
+
+    <p
+      class="font-mono text-xs uppercase tracking-[0.3em] text-terracotta-600 dark:text-terracotta-300"
+    >
+      404 &middot; lost page
+    </p>
+    <h1
+      class="mt-4 font-display text-6xl leading-none text-ink sm:text-8xl dark:text-cream"
+    >
+      <span class="italic">Nothing</span> here.
+    </h1>
+    <p
+      class="mt-6 max-w-prose font-sans text-lg text-ink-soft dark:text-cream-soft"
+    >
+      The page you're looking for must've wandered off the sketchbook. It
+      happens. Want to head back to the
+      <a
+        href="/"
+        class="font-medium text-terracotta-600 underline underline-offset-4 hover:text-terracotta-700 dark:text-terracotta-300 dark:hover:text-terracotta-200"
+        >front page</a
+      >?
+    </p>
+
+    <div class="mt-12 w-full max-w-xs">
+      <Placeholder
+        label="Sketch placeholder — a tiny lost figure with an umbrella"
+        ratio="1/1"
+        tone="warm"
+      />
+    </div>
+  </section>
+</BaseLayout>

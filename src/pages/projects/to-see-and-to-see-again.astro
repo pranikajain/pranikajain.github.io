@@ -1,0 +1,59 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PhotographyGallery from '../../components/projects/PhotographyGallery.astro';
+import Lightbox from '../../components/projects/Lightbox.astro';
+
+const all = await getCollection('projects');
+const photography = all.filter((p) => p.data.kind === 'photography');
+---
+
+<BaseLayout
+  title="To See, and to See Again."
+  description="One photograph a day by Pranika Jain — and one taken by a stranger with her camera in the same place."
+>
+  <article class="mx-auto max-w-page px-5 py-16 sm:px-8 sm:py-24">
+    <a
+      href="/projects"
+      class="inline-flex items-center gap-1 font-sans text-sm text-terracotta-600 underline-offset-4 hover:underline dark:text-terracotta-300"
+      >&larr; All projects</a
+    >
+
+    <header class="mt-6 mb-12">
+      <p
+        class="flex items-center gap-3 font-mono text-xs uppercase tracking-[0.3em] text-terracotta-600 dark:text-terracotta-300"
+      >
+        <svg viewBox="0 0 16 16" aria-hidden="true" class="h-3.5 w-3.5">
+          <circle
+            cx="8"
+            cy="8"
+            r="6"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.6"></circle>
+          <circle cx="8" cy="8" r="2" fill="currentColor"></circle>
+        </svg>
+        To See, and to See Again
+      </p>
+      <h1
+        class="mt-3 font-display text-4xl leading-tight tracking-tight text-ink sm:text-5xl dark:text-cream"
+      >
+        To See, and to See <span class="italic">Again</span>.
+      </h1>
+      <p
+        class="mt-5 font-sans text-lg text-ink-soft dark:text-cream-soft"
+      >
+        Lately I've started carrying a camera. I'm a few days into a habit of taking one photograph a day, and asking a stranger to take one with my camera too, when I can. I was curious to know what two people see in the same place at the same time. Most days the photos aren't much. Once in a while one of them won't leave me alone.
+      </p>
+       <p
+        class="mt-5 font-sans text-lg text-ink-soft dark:text-cream-soft"
+      > 
+       I also ask each stranger for a word, or a sentence. Sometimes they look at the photo again before answering, and find something they hadn't seen when they raised the camera.
+      </p>
+    </header>
+
+    <PhotographyGallery entries={photography} />
+
+    <Lightbox />
+  </article>
+</BaseLayout>

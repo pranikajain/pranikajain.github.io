@@ -1,0 +1,130 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Lightbox from '../../components/projects/Lightbox.astro';
+
+const previews = [
+  {
+    src: '/images/a-slow-conversation/tangles.png',
+    label: 'Tangles',
+    alt: 'A Slow Conversation in its Tangles mode: several large enclosed shapes on a cream background are filled with dense zentangle patterns — red diamond grids, brown cross-hatch, dotted bands — while the surrounding negative space is scattered with tiny ink motifs.',
+  },
+  {
+    src: '/images/a-slow-conversation/tones-finished.png',
+    label: 'Tones',
+    alt: 'A Slow Conversation in its Tones mode: hand-drawn letterforms outlined in white sit over a flowing purple-and-green watercolour background, every enclosed shape packed with dense dotted tone patterns in blues, greens, oranges, and purples.',
+    mobileFirst: true,
+  },
+  {
+    src: '/images/a-slow-conversation/mandalas.png',
+    label: 'Mandalas',
+    alt: 'A Slow Conversation in its Mandalas mode: dozens of intricate circular mandalas in purples, greens, reds, and yellows are tightly packed across a cream canvas like stones fitted into a wall, each ring patterned with a different motif.',
+  },
+];
+---
+
+<BaseLayout
+  title="A Slow Conversation."
+  description="An interactive generative sketchbook by Pranika Jain — you draw, it draws back."
+>
+  <article class="mx-auto max-w-page px-5 py-16 sm:px-8 sm:py-24">
+    <a
+      href="/projects"
+      class="inline-flex items-center gap-1 font-sans text-sm text-terracotta-600 underline-offset-4 hover:underline dark:text-terracotta-300"
+      >&larr; All projects</a
+    >
+
+    <header class="mt-6 mb-12">
+      <p
+        class="flex items-center gap-3 font-mono text-xs uppercase tracking-[0.3em] text-terracotta-600 dark:text-terracotta-300"
+      >
+        <svg viewBox="0 0 16 16" aria-hidden="true" class="h-3 w-3">
+          <circle cx="4" cy="4" r="1.6" fill="currentColor"></circle>
+          <circle cx="12" cy="4" r="1.6" fill="currentColor"></circle>
+          <circle cx="4" cy="12" r="1.6" fill="currentColor"></circle>
+          <circle cx="12" cy="12" r="1.6" fill="currentColor"></circle>
+        </svg>
+        A Slow Conversation
+      </p>
+      <h1
+        class="mt-3 font-display text-4xl leading-tight tracking-tight text-ink sm:text-5xl dark:text-cream"
+      >
+        A Slow <span class="italic">Conversation</span>.
+      </h1>
+    </header>
+
+    <section
+      class="space-y-5 font-sans text-lg leading-relaxed text-ink-soft dark:text-cream-soft"
+    >
+      <p>
+        Most generative art runs on its own. This one waits for you. You draw
+        a mark and pause; it finds the shapes your lines have enclosed and
+        quietly fills them with pattern, then waits for your next move. Draw,
+        pause, watch it answer, draw again — an unhurried back-and-forth
+        between a hand and a machine.
+      </p>
+      <p>Built with vanilla Canvas2D — no framework, no build step.</p>
+    </section>
+
+    <nav
+      class="mt-8 flex flex-wrap items-center justify-between gap-x-6 gap-y-3 font-sans text-sm"
+      aria-label="A Slow Conversation links"
+    >
+      <a
+        href="https://pranikajain.github.io/a-slow-conversation/"
+        target="_blank"
+        rel="noreferrer noopener"
+        class="group inline-flex items-center gap-2 rounded-full border border-terracotta-500 px-4 py-2 text-terracotta-600 transition-colors hover:bg-terracotta-500 hover:text-paper dark:border-terracotta-300 dark:text-terracotta-200 dark:hover:bg-terracotta-300 dark:hover:text-night"
+      >
+        Try it
+        <span
+          aria-hidden="true"
+          class="transition-transform group-hover:translate-x-0.5">&rarr;</span
+        >
+      </a>
+      <a
+        href="/blog/a-slow-conversation"
+        class="group link-wobble inline-flex items-center gap-2 text-ink dark:text-cream"
+      >
+        Read the story behind it
+        <span
+          aria-hidden="true"
+          class="transition-transform group-hover:translate-x-0.5">&rarr;</span
+        >
+      </a>
+    </nav>
+
+    {/* Preview gallery — click any tile to enlarge in the Lightbox. */}
+    <ul class="mt-12 grid grid-cols-1 gap-4 sm:grid-cols-3">
+      {
+        previews.map((p) => (
+          <li class={p.mobileFirst ? 'order-first sm:order-none' : ''}>
+            <figure class="m-0">
+              <button
+                type="button"
+                aria-label={`Open: ${p.label}`}
+                data-lightbox-src={p.src}
+                data-lightbox-alt={p.alt}
+                data-lightbox-caption={p.label}
+                class="group block w-full overflow-hidden rounded-lg bg-paper-warm shadow-soft ring-1 ring-ink/5 transition duration-200 hover:-translate-y-0.5 hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-terracotta-500 dark:bg-cream dark:ring-cream/10"
+              >
+                <img
+                  src={p.src}
+                  alt={p.alt}
+                  loading="lazy"
+                  decoding="async"
+                  class="block w-full transition-transform duration-300 group-hover:scale-[1.02]"
+                  style="aspect-ratio: 1400/680;"
+                />
+              </button>
+              <figcaption class="mt-2 font-mono text-[10px] uppercase tracking-[0.18em] text-ink-dim dark:text-cream-soft/70">
+                {p.label}
+              </figcaption>
+            </figure>
+          </li>
+        ))
+      }
+    </ul>
+
+    <Lightbox />
+  </article>
+</BaseLayout>

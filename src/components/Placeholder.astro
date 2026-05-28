@@ -1,0 +1,71 @@
+---
+/**
+ * Visible placeholder for missing imagery. Renders a dashed box at the
+ * requested aspect ratio with the alt-text-to-be written inside, so a
+ * missing sketch is obvious on the page and never silently absent.
+ */
+interface Props {
+  /** What the image will eventually be. Becomes alt text + visible label. */
+  label: string;
+  /** Aspect ratio: e.g. "1/1", "4/5", "3/2", "16/9". */
+  ratio?: string;
+  /** Optional CSS class for sizing. */
+  class?: string;
+  /** Visual tone — neutral by default, warm tints the dashed border. */
+  tone?: 'neutral' | 'warm' | 'cool';
+  /** Optional supplementary caption. */
+  caption?: string;
+}
+
+const {
+  label,
+  ratio = '4/5',
+  class: className = '',
+  tone = 'warm',
+  caption,
+} = Astro.props;
+
+const toneBorder = {
+  neutral: 'border-ink/30 dark:border-cream/30',
+  warm: 'border-terracotta-400/60 dark:border-terracotta-300/50',
+  cool: 'border-ink-soft/40 dark:border-cream/40',
+}[tone];
+
+const toneBg = {
+  neutral: 'bg-paper-deep/30 dark:bg-night-soft/40',
+  warm: 'bg-terracotta-50/40 dark:bg-terracotta-900/15',
+  cool: 'bg-paper-warm/60 dark:bg-night-soft/30',
+}[tone];
+---
+
+<figure
+  class:list={[
+    'group relative flex items-center justify-center overflow-hidden rounded-lg border-2 border-dashed p-4 transition-colors',
+    toneBorder,
+    toneBg,
+    className,
+  ]}
+  style={`aspect-ratio: ${ratio};`}
+  role="img"
+  aria-label={label}
+>
+  <div class="flex flex-col items-center gap-2 text-center">
+    <span
+      class="font-mono text-[10px] uppercase tracking-[0.2em] text-terracotta-600 dark:text-terracotta-300"
+    >
+      Placeholder
+    </span>
+    <span
+      class="font-display text-sm italic text-ink/80 dark:text-cream/80 max-w-[22ch] text-balance"
+    >
+      {label}
+    </span>
+    {
+      caption && (
+        <span class="mt-1 font-sans text-[11px] text-ink-dim dark:text-cream-soft/70">
+          {caption}
+        </span>
+      )
+    }
+  </div>
+</figure>

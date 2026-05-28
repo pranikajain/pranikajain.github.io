@@ -1,0 +1,256 @@
+---
+/**
+ * Site-wide artistic backdrop. Sits behind all content as a fixed
+ * full-viewport layer. Three things happen here:
+ *
+ *   1) Six Matisse-style organic cut-out shapes drift opposite to
+ *      the cursor (slow parallax). Each shape has its own depth
+ *      multiplier so they move at different rates — depth-of-field.
+ *   2) A scattered dot constellation (Klee × Kusama) gently scales
+ *      and warms in color near the pointer (proximity reaction).
+ *   3) Two squiggle ink lines drift like Hilma af Klint diagrams.
+ *
+ * Everything is purely decorative (aria-hidden, pointer-events:none)
+ * and turns off entirely under `prefers-reduced-motion`. The whole
+ * layer is a single SVG, GPU-transformed via CSS custom props that a
+ * tiny rAF-throttled listener updates from pointer events.
+ */
+
+// Pre-placed dot positions — hand-scattered, not a regular grid.
+const dots = [
+  [6, 18], [12, 42], [18, 8], [22, 64], [26, 28], [30, 84],
+  [34, 14], [38, 50], [42, 36], [46, 78], [50, 6], [54, 24],
+  [58, 60], [62, 12], [66, 44], [70, 86], [74, 30], [78, 56],
+  [82, 18], [86, 72], [90, 38], [94, 8], [16, 92], [44, 92],
+  [72, 92], [4, 56], [98, 52], [10, 74],
+];
+---
+
+<div
+  id="backdrop-ornaments"
+  aria-hidden="true"
+  class="pointer-events-none fixed inset-0 -z-10 overflow-hidden"
+  style="--mx: 0.5; --my: 0.5; --warm: 0;"
+>
+  {/* Paper-grain wash */}
+  <div
+    class="absolute inset-0 opacity-[0.045] mix-blend-multiply dark:opacity-[0.08] dark:mix-blend-screen"
+    style="background-image: url(&quot;data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' seed='4' /></filter><rect width='100%25' height='100%25' filter='url(%23n)' /></svg>&quot;); background-size: 160px 160px;"
+  >
+  </div>
+
+  {/* Soft radial warm wash, anchored to cursor */}
+  <div
+    class="absolute inset-0 transition-opacity duration-700"
+    style="background: radial-gradient(60rem 50rem at calc(var(--mx) * 100%) calc(var(--my) * 100%), rgba(210,105,30,0.07), transparent 70%);"
+  >
+  </div>
+
+  <svg
+    class="absolute inset-0 h-full w-full"
+    viewBox="0 0 100 100"
+    preserveAspectRatio="xMidYMid slice"
+  >
+    <defs>
+      {/* Hand-drawn organic Matisse blob silhouettes */}
+      <path
+        id="blob-a"
+        d="M55,8 C76,4 92,22 90,46 C88,68 64,82 42,80 C18,78 4,56 8,32 C12,8 36,12 55,8 Z"
+      ></path>
+      <path
+        id="blob-b"
+        d="M48,12 C72,6 96,30 92,58 C88,84 56,96 30,88 C8,82 0,52 6,30 C14,6 30,18 48,12 Z"
+      ></path>
+      <path
+        id="blob-c"
+        d="M50,10 C80,4 98,38 84,64 C70,90 32,94 14,72 C0,52 6,22 22,12 C36,4 38,12 50,10 Z"
+      ></path>
+      <path
+        id="leaf"
+        d="M50,4 C72,18 86,42 78,68 C70,90 44,98 30,82 C16,66 22,40 34,22 C40,12 46,8 50,4 Z"
+      ></path>
+    </defs>
+
+    {/* Big organic shapes — slow parallax. Each has its own depth + tint.
+        Opacities dialed lower in dark mode so the deeper ground doesn't
+        push the shapes into the foreground. */}
+    <g class="orn orn-1" style="--depth: -22; --offset-x: 12; --offset-y: 18; --rot: -8;">
+      <use href="#blob-a" fill="currentColor" class="text-terracotta-300/35 dark:text-terracotta-500/14" />
+    </g>
+    <g class="orn orn-2" style="--depth: 38; --offset-x: 72; --offset-y: 10; --rot: 14;">
+      <use href="#leaf" fill="currentColor" class="text-sage-300/40 dark:text-sage-500/14" />
+    </g>
+    <g class="orn orn-3" style="--depth: -14; --offset-x: 80; --offset-y: 60; --rot: -22;">
+      <use href="#blob-b" fill="currentColor" class="text-blush-300/40 dark:text-blush-500/13" />
+    </g>
+    <g class="orn orn-4" style="--depth: 28; --offset-x: 4; --offset-y: 62; --rot: 32;">
+      <use href="#blob-c" fill="currentColor" class="text-terracotta-200/50 dark:text-terracotta-700/18" />
+    </g>
+    <g class="orn orn-5" style="--depth: -34; --offset-x: 42; --offset-y: 80; --rot: 6;">
+      <use href="#leaf" fill="currentColor" class="text-sage-200/45 dark:text-sage-700/15" />
+    </g>
+    <g class="orn orn-6" style="--depth: 18; --offset-x: 50; --offset-y: -8; --rot: -42;">
+      <use href="#blob-a" fill="currentColor" class="text-blush-200/50 dark:text-blush-700/15" />
+    </g>
+
+    {/* Dot constellation — proximity-react */}
+    <g class="dots">
+      {
+        dots.map(([x, y], i) => (
+          <circle
+            class="dot"
+            data-x={x}
+            data-y={y}
+            cx={x}
+            cy={y}
+            r="0.35"
+            style={`--phase: ${i};`}
+          />
+        ))
+      }
+    </g>
+  </svg>
+</div>
+
+<style>
+  #backdrop-ornaments .orn {
+    /* Drift opposite to cursor; depth controls amplitude + sign. */
+    transform: translate3d(
+        calc((var(--mx) - 0.5) * var(--depth) * 1px),
+        calc((var(--my) - 0.5) * var(--depth) * 1px),
+        0
+      )
+      rotate(calc(var(--rot, 0) * 1deg));
+    transform-origin: calc(var(--offset-x, 50) * 1%)
+      calc(var(--offset-y, 50) * 1%);
+    transform-box: fill-box;
+    transition: transform 1.6s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: transform;
+  }
+
+  /* Each blob also lives at its own scattered position via its origin offset.
+     The `use` re-renders the path at (0,0)..100; we shift it via the parent
+     group's transform-origin trick — but for true positioning we translate
+     the use itself with the same custom prop. */
+  #backdrop-ornaments .orn use {
+    transform: translate(
+        calc(var(--offset-x, 0) * 1% - 50%),
+        calc(var(--offset-y, 0) * 1% - 50%)
+      )
+      scale(0.9);
+    transform-origin: 50% 50%;
+  }
+
+  #backdrop-ornaments .dot {
+    fill: currentColor;
+    color: rgb(27 42 65 / 0.32);
+    transform-origin: center;
+    transition: transform 220ms ease-out, fill 220ms ease-out, color 220ms ease-out;
+  }
+  :global(.dark) #backdrop-ornaments .dot {
+    color: rgb(242 233 216 / 0.22);
+  }
+
+  /* Float keyframe — very slow, ambient drift on top of the parallax */
+  @keyframes drift-a { 0%,100% { translate: 0 0 } 50% { translate: 0 -6px } }
+  @keyframes drift-b { 0%,100% { translate: 0 0 } 50% { translate: 4px 4px } }
+  @keyframes drift-c { 0%,100% { translate: 0 0 } 50% { translate: -3px 3px } }
+
+  #backdrop-ornaments .orn-1 use { animation: drift-a 14s ease-in-out infinite; }
+  #backdrop-ornaments .orn-2 use { animation: drift-b 18s ease-in-out infinite; }
+  #backdrop-ornaments .orn-3 use { animation: drift-c 16s ease-in-out infinite; }
+  #backdrop-ornaments .orn-4 use { animation: drift-a 22s ease-in-out infinite; }
+  #backdrop-ornaments .orn-5 use { animation: drift-b 20s ease-in-out infinite; }
+  #backdrop-ornaments .orn-6 use { animation: drift-c 24s ease-in-out infinite; }
+
+  @media (prefers-reduced-motion: reduce) {
+    #backdrop-ornaments .orn,
+    #backdrop-ornaments .orn use,
+    #backdrop-ornaments .dot {
+      animation: none !important;
+      transition: none !important;
+      transform: none !important;
+    }
+  }
+</style>
+
+<script is:inline>
+  (() => {
+    const root = document.getElementById('backdrop-ornaments');
+    if (!root) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    const dots = Array.from(root.querySelectorAll('.dot'));
+    const dotXY = dots.map((d) => [
+      parseFloat(d.getAttribute('data-x')),
+      parseFloat(d.getAttribute('data-y')),
+    ]);
+
+    let mx = 0.5,
+      my = 0.5,
+      ticking = false;
+
+    function frame() {
+      ticking = false;
+      root.style.setProperty('--mx', mx.toFixed(4));
+      root.style.setProperty('--my', my.toFixed(4));
+
+      // Proximity reaction for dots. Cursor in SVG viewBox space (0..100).
+      const cx = mx * 100;
+      const cy = my * 100;
+      for (let i = 0; i < dots.length; i++) {
+        const [dx, dy] = dotXY[i];
+        const d = Math.hypot(dx - cx, dy - cy);
+        // Within ~14 viewport units, dot grows + warms.
+        const t = Math.max(0, 1 - d / 14);
+        const scale = 1 + t * 2.4;
+        const el = dots[i];
+        el.style.transform = `scale(${scale})`;
+        if (t > 0.05) {
+          el.style.color = `rgba(210, 105, 30, ${0.35 + t * 0.5})`;
+        } else {
+          el.style.color = '';
+        }
+      }
+    }
+
+    function schedule() {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(frame);
+      }
+    }
+
+    window.addEventListener(
+      'pointermove',
+      (e) => {
+        mx = e.clientX / window.innerWidth;
+        my = e.clientY / window.innerHeight;
+        schedule();
+      },
+      { passive: true }
+    );
+
+    // Reset to center on pointer leaving the viewport.
+    window.addEventListener('pointerleave', () => {
+      mx = 0.5;
+      my = 0.5;
+      schedule();
+    });
+
+    // Subtle drift on scroll, to keep the layer alive even with a still mouse.
+    window.addEventListener(
+      'scroll',
+      () => {
+        my = Math.min(
+          1,
+          Math.max(0, window.scrollY / (document.body.scrollHeight - window.innerHeight))
+        );
+        schedule();
+      },
+      { passive: true }
+    );
+
+    schedule();
+  })();
+</script>

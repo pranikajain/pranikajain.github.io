@@ -1,0 +1,98 @@
+---
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import BackdropOrnaments from '../components/BackdropOrnaments.astro';
+
+interface Props {
+  title: string;
+  description?: string;
+  /** Open Graph image (absolute or site-relative). Defaults to /og-default.png. */
+  ogImage?: string;
+  /** OG type — 'website' for pages, 'article' for posts. */
+  ogType?: 'website' | 'article';
+  /** Hide site chrome (e.g. for landing experiments). */
+  bare?: boolean;
+}
+
+const {
+  title,
+  description = 'Pranika Jain — software engineer of ten years, now in NYC making things by hand and with code.',
+  ogImage = '/og-default.png',
+  ogType = 'website',
+  bare = false,
+} = Astro.props;
+
+const fullTitle = title.includes('Pranika') ? title : `${title} · Pranika Jain`;
+const canonical = new URL(Astro.url.pathname, Astro.site).toString();
+const ogImageUrl = new URL(ogImage, Astro.site).toString();
+---
+
+<!doctype html>
+<html lang="en" class="h-full">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="canonical" href={canonical} />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title="Pranika Jain — Blog"
+      href="/rss.xml"
+    />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+
+    {/* Font: Soria (Fontshare) — single typeface across the site. */}
+    <link rel="preconnect" href="https://api.fontshare.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://api.fontshare.com/v2/css?f[]=soria@400&display=swap"
+    />
+
+    {/* Open Graph */}
+    <meta property="og:type" content={ogType} />
+    <meta property="og:site_name" content="Pranika Jain" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImageUrl} />
+
+    {/* Twitter */}
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageUrl} />
+
+    {/* Pre-paint theme to avoid flash. */}
+    <script is:inline>
+      (() => {
+        try {
+          const stored = localStorage.getItem('theme');
+          const prefersDark = window.matchMedia(
+            '(prefers-color-scheme: dark)'
+          ).matches;
+          const isDark =
+            stored === 'dark' || (stored !== 'light' && prefersDark);
+          if (isDark) document.documentElement.classList.add('dark');
+        } catch (_) {}
+      })();
+    </script>
+  </head>
+
+  <body
+    class="relative flex min-h-full flex-col bg-paper font-sans text-ink antialiased dark:bg-night dark:text-cream"
+  >
+    {!bare && <BackdropOrnaments />}
+    {!bare && <Header />}
+    <main id="main" class="relative z-10 flex-1">
+      <slot />
+    </main>
+    {!bare && <Footer />}
+  </body>
+</html>

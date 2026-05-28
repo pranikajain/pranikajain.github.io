@@ -1,0 +1,50 @@
+@import 'tailwindcss';
+@plugin "@tailwindcss/typography";
+@config "../../tailwind.config.ts";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  color-scheme: light dark;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Hand-drawn link underline: SVG squiggle that grows on hover.
+   Apply with class="link-wobble" on any <a>. */
+.link-wobble {
+  position: relative;
+  text-decoration: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 6' preserveAspectRatio='none'><path d='M1 3 Q 20 0 40 3 T 80 3 T 119 3' fill='none' stroke='%23D2691E' stroke-width='1.4' stroke-linecap='round'/></svg>");
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 0% 0.45em;
+  padding-bottom: 0.18em;
+  transition: background-size 360ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.link-wobble:hover,
+.link-wobble:focus-visible {
+  background-size: 100% 0.45em;
+}
+
+/* "Cut paper" stack — used in the hero art composition.  Each layer gets
+   a slight rotation and shadow for a real paper-cut feel. */
+.paper-cut {
+  filter: drop-shadow(0 6px 14px rgba(27, 42, 65, 0.08))
+    drop-shadow(0 1px 2px rgba(27, 42, 65, 0.06));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

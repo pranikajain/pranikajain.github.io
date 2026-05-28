@@ -1,0 +1,117 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Placeholder from '../../components/Placeholder.astro';
+import Lightbox from '../../components/projects/Lightbox.astro';
+
+export async function getStaticPaths() {
+  const posts = (
+    await getCollection('blog', ({ data }) => !data.draft)
+  ).sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+  return posts.map((post, i) => ({
+    params: { slug: post.id },
+    props: {
+      post,
+      prev: posts[i + 1] ?? null,
+      next: posts[i - 1] ?? null,
+    },
+  }));
+}
+
+const { post, prev, next } = Astro.props;
+const { Content } = await render(post);
+const { data } = post;
+
+// timeZone: 'UTC' keeps date-only pubDates from rolling back a day in
+// local timezones behind UTC (e.g. 2026-01-11 → "January 10" in PST).
+const dateFmt = new Intl.DateTimeFormat('en-US', {
+  month: 'long',
+  day: 'numeric',
+  year: 'numeric',
+  timeZone: 'UTC',
+});
+
+---
+
+<BaseLayout
+  title={data.title}
+  description={data.description ?? `A post by Pranika Jain.`}
+  ogType="article"
+>
+  <article class="mx-auto max-w-page px-5 py-16 sm:px-8 sm:py-24">
+    <a
+      href="/blog"
+      class="inline-flex items-center gap-1 font-sans text-sm text-terracotta-600 underline-offset-4 hover:underline dark:text-terracotta-300"
+      >&larr; All posts</a
+    >
+
+    <header class="mt-6 mb-10">
+      <time
+        datetime={data.pubDate.toISOString()}
+        class="font-mono text-xs uppercase tracking-[0.2em] text-ink-dim dark:text-cream-soft/70"
+      >
+        {dateFmt.format(data.pubDate)}
+      </time>
+      <h1
+        class="mt-3 font-display text-4xl leading-tight tracking-tight text-ink sm:text-5xl dark:text-cream"
+      >
+        {data.title}
+      </h1>
+      {
+        data.description && (
+          <p class="mt-4 font-sans text-lg text-ink-soft italic dark:text-cream-soft">
+            {data.description}
+          </p>
+        )
+      }
+    </header>
+
+    <section
+      class="prose prose-lg max-w-none font-sans text-ink prose-headings:font-display prose-headings:italic prose-headings:text-ink prose-a:text-terracotta-600 prose-a:underline-offset-4 hover:prose-a:text-terracotta-700 dark:prose-invert dark:text-cream-soft dark:prose-headings:text-cream dark:prose-a:text-terracotta-300"
+    >
+      <Content components={{ Placeholder }} />
+    </section>
+
+    {
+      (prev || next) && (
+        <nav
+          class="mt-16 grid gap-6 border-t border-ink/10 pt-8 sm:grid-cols-2 dark:border-cream/10"
+          aria-label="Post navigation"
+        >
+          {prev ? (
+            <a
+              href={`/blog/${prev.id}`}
+              class="group block rounded-xl border border-ink/10 p-4 transition-colors hover:border-terracotta-400 dark:border-cream/10 dark:hover:border-terracotta-300"
+            >
+              <p class="font-mono text-[10px] uppercase tracking-widest text-ink-dim dark:text-cream-soft/70">
+                &larr; Previous
+              </p>
+              <p class="mt-1 font-display text-lg text-ink group-hover:text-terracotta-600 dark:text-cream dark:group-hover:text-terracotta-200">
+                {prev.data.title}
+              </p>
+            </a>
+          ) : (
+            <span />
+          )}
+          {next ? (
+            <a
+              href={`/blog/${next.id}`}
+              class="group block rounded-xl border border-ink/10 p-4 text-right transition-colors hover:border-terracotta-400 dark:border-cream/10 dark:hover:border-terracotta-300"
+            >
+              <p class="font-mono text-[10px] uppercase tracking-widest text-ink-dim dark:text-cream-soft/70">
+                Next &rarr;
+              </p>
+              <p class="mt-1 font-display text-lg text-ink group-hover:text-terracotta-600 dark:text-cream dark:group-hover:text-terracotta-200">
+                {next.data.title}
+              </p>
+            </a>
+          ) : (
+            <span />
+          )}
+        </nav>
+      )
+    }
+  </article>
+  <Lightbox />
+</BaseLayout>

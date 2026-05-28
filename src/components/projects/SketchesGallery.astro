@@ -1,0 +1,83 @@
+---
+/**
+ * Sketchbook wall — every sketch rendered in a uniform 3:4 portrait
+ * tile so the gallery forms a clean rectangle (no ragged bottom edge)
+ * while matching the natural orientation of the sketches.
+ * `object-cover` fills the tile; portraits fit perfectly, the rare
+ * landscape is cropped on the sides. The lightbox shows the full
+ * uncropped image with the per-image caption on click. Order is a
+ * deterministic hash-shuffle so the wall feels hand-arranged.
+ *
+ * Columns: 2 on mobile, 5 from sm+. With 10 sketches today this
+ * yields a 2×5 / 5×2 rectangle. Update the column count if the total
+ * stops dividing cleanly.
+ */
+import type { CollectionEntry } from 'astro:content';
+import Placeholder from '../Placeholder.astro';
+
+interface Props {
+  entries: CollectionEntry<'projects'>[];
+}
+
+const { entries } = Astro.props;
+
+type Item = {
+  src?: string;
+  alt: string;
+  caption?: string;
+  ratio: string;
+  key: string;
+};
+
+const items: Item[] = entries.flatMap((e, ei) =>
+  e.data.images.map((img, ii) => ({
+    src: img.src,
+    alt: img.alt,
+    caption: img.caption,
+    ratio: img.ratio,
+    key: `${e.id}-${ei}-${ii}`,
+  })),
+);
+
+function hash(s: string): number {
+  let h = 7;
+  for (let i = 0; i < s.length; i++) h = ((h * 31) ^ s.charCodeAt(i)) >>> 0;
+  return h;
+}
+items.sort((a, b) => hash(a.key) - hash(b.key));
+---
+
+{
+  items.length === 0 ? (
+    <Placeholder
+      label="Sketches will appear here — Pranika will fill this in."
+      ratio="3/1"
+      tone="warm"
+    />
+  ) : (
+    <div class="grid grid-cols-2 gap-3 sm:grid-cols-5">
+      {items.map((item) =>
+        item.src ? (
+          <button
+            type="button"
+            aria-label={`Open: ${item.alt}`}
+            data-lightbox-src={item.src}
+            data-lightbox-alt={item.alt}
+            data-lightbox-caption={item.caption ?? ''}
+            class="group block aspect-[3/4] w-full overflow-hidden rounded-lg bg-paper-warm shadow-soft ring-1 ring-ink/5 transition duration-200 hover:-translate-y-0.5 hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-terracotta-500 dark:bg-cream dark:ring-cream/10"
+          >
+            <img
+              src={item.src}
+              alt={item.alt}
+              loading="lazy"
+              decoding="async"
+              class="block h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+            />
+          </button>
+        ) : (
+          <Placeholder label={item.alt} ratio="3/4" tone="warm" />
+        ),
+      )}
+    </div>
+  )
+}

@@ -1,0 +1,238 @@
+---
+/**
+ * Single shared lightbox dialog. Any element with the
+ * `data-lightbox-src` attribute opens it, populating the image and
+ * (optionally) the caption from `data-lightbox-alt` and
+ * `data-lightbox-caption`.
+ *
+ * When opened, the prev/next buttons (and ← / → arrow keys) flip
+ * through every other `[data-lightbox-src]` inside the same gallery —
+ * specifically, the closest `[role="tabpanel"]` ancestor — wrapping
+ * around at the ends. If there's only one image in the gallery, the
+ * prev/next buttons stay hidden.
+ *
+ * Uses the native <dialog> element so we get backdrop, ESC-to-close,
+ * and focus management without a library.
+ */
+---
+
+<dialog
+  id="lightbox"
+  aria-label="Image viewer"
+  class="m-auto max-h-none w-full max-w-none border-0 bg-transparent p-0 backdrop:bg-night/85 backdrop:backdrop-blur-sm"
+>
+  <div
+    id="lightbox-inner"
+    class="relative mx-auto flex max-h-[100dvh] w-full max-w-5xl flex-col items-center justify-center gap-5 px-5 py-10 sm:px-8"
+  >
+    <button
+      type="button"
+      id="lightbox-close"
+      aria-label="Close image"
+      class="absolute right-5 top-5 z-10 inline-flex h-10 w-10 items-center justify-center rounded-full bg-paper/90 text-ink shadow-soft ring-1 ring-ink/10 backdrop-blur transition-colors hover:bg-terracotta-500 hover:text-paper sm:right-8 sm:top-8 dark:bg-night-soft/90 dark:text-cream dark:ring-cream/15"
+    >
+      <svg viewBox="0 0 20 20" class="h-4 w-4" aria-hidden="true">
+        <path
+          d="M5,5 L15,15 M15,5 L5,15"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          stroke-linecap="round"
+        ></path>
+      </svg>
+    </button>
+
+    <button
+      type="button"
+      id="lightbox-prev"
+      aria-label="Previous image"
+      class="absolute left-5 top-1/2 z-10 inline-flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-paper/90 text-ink shadow-soft ring-1 ring-ink/10 backdrop-blur transition-colors hover:bg-terracotta-500 hover:text-paper sm:left-8 dark:bg-night-soft/90 dark:text-cream dark:ring-cream/15"
+    >
+      <svg viewBox="0 0 20 20" class="h-4 w-4" aria-hidden="true">
+        <path
+          d="M13,4 L7,10 L13,16"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        ></path>
+      </svg>
+    </button>
+
+    <button
+      type="button"
+      id="lightbox-next"
+      aria-label="Next image"
+      class="absolute right-5 top-1/2 z-10 inline-flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-paper/90 text-ink shadow-soft ring-1 ring-ink/10 backdrop-blur transition-colors hover:bg-terracotta-500 hover:text-paper sm:right-8 dark:bg-night-soft/90 dark:text-cream dark:ring-cream/15"
+    >
+      <svg viewBox="0 0 20 20" class="h-4 w-4" aria-hidden="true">
+        <path
+          d="M7,4 L13,10 L7,16"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        ></path>
+      </svg>
+    </button>
+
+    <figure class="m-0 flex max-h-full flex-col items-center gap-5">
+      <div class="relative inline-block max-h-[78dvh] max-w-full">
+        <img
+          id="lightbox-img"
+          alt=""
+          class="block max-h-[78dvh] max-w-full rounded-2xl bg-paper-warm object-contain shadow-soft ring-1 ring-ink/10 dark:bg-cream dark:ring-cream/15"
+        />
+        <span
+          id="lightbox-credit"
+          class="absolute bottom-3 right-3 hidden rounded-sm bg-ink/55 px-2 py-1 font-mono text-[11px] uppercase tracking-[0.18em] text-cream backdrop-blur-sm"
+        ></span>
+      </div>
+      <figcaption
+        id="lightbox-caption"
+        class="hidden max-w-[60ch] text-center font-display text-base italic text-cream sm:text-lg"
+      ></figcaption>
+    </figure>
+  </div>
+</dialog>
+
+<style>
+  /* Hide native dialog when closed (some browsers don't hide :not([open]) reliably). */
+  dialog:not([open]) {
+    display: none;
+  }
+  /* Smooth fade-in on open. */
+  dialog[open] {
+    animation: lb-fade 200ms ease-out;
+  }
+  dialog[open]::backdrop {
+    animation: lb-fade 200ms ease-out;
+  }
+  @keyframes lb-fade {
+    from { opacity: 0 }
+    to { opacity: 1 }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    dialog[open],
+    dialog[open]::backdrop {
+      animation: none;
+    }
+  }
+</style>
+
+<script is:inline>
+  (() => {
+    const dialog = document.getElementById('lightbox');
+    if (!dialog) return;
+    const img = document.getElementById('lightbox-img');
+    const cap = document.getElementById('lightbox-caption');
+    const credit = document.getElementById('lightbox-credit');
+    const closeBtn = document.getElementById('lightbox-close');
+    const prevBtn = document.getElementById('lightbox-prev');
+    const nextBtn = document.getElementById('lightbox-next');
+
+    /** @type {{src:string, alt:string, caption:string, credit:string}[]} */
+    let list = [];
+    let idx = 0;
+
+    function showAt(i) {
+      const item = list[i];
+      if (!item) return;
+      img.src = item.src;
+      img.alt = item.alt || '';
+      if (item.caption && item.caption.length > 0) {
+        cap.textContent = item.caption;
+        cap.classList.remove('hidden');
+      } else {
+        cap.textContent = '';
+        cap.classList.add('hidden');
+      }
+      if (item.credit && item.credit.length > 0) {
+        credit.textContent = `© ${item.credit}`;
+        credit.classList.remove('hidden');
+      } else {
+        credit.textContent = '';
+        credit.classList.add('hidden');
+      }
+      const many = list.length > 1;
+      prevBtn.classList.toggle('hidden', !many);
+      nextBtn.classList.toggle('hidden', !many);
+    }
+
+    function openFromTrigger(trigger) {
+      const scope = trigger.closest('[role="tabpanel"]') || document;
+      const triggers = Array.from(scope.querySelectorAll('[data-lightbox-src]'));
+      list = triggers.map((t) => ({
+        src: t.getAttribute('data-lightbox-src'),
+        alt: t.getAttribute('data-lightbox-alt') || '',
+        caption: t.getAttribute('data-lightbox-caption') || '',
+        credit: t.getAttribute('data-lightbox-credit') || '',
+      }));
+      idx = Math.max(0, triggers.indexOf(trigger));
+      showAt(idx);
+      if (typeof dialog.showModal === 'function') {
+        dialog.showModal();
+      } else {
+        dialog.setAttribute('open', '');
+      }
+    }
+
+    function close() {
+      if (typeof dialog.close === 'function') dialog.close();
+      else dialog.removeAttribute('open');
+      // Clear src so the next open doesn't briefly show a stale image.
+      setTimeout(() => {
+        img.src = '';
+      }, 200);
+    }
+
+    function next() {
+      if (list.length < 2) return;
+      idx = (idx + 1) % list.length;
+      showAt(idx);
+    }
+
+    function prev() {
+      if (list.length < 2) return;
+      idx = (idx - 1 + list.length) % list.length;
+      showAt(idx);
+    }
+
+    // Delegated click — any current or future [data-lightbox-src] element opens.
+    document.addEventListener('click', (e) => {
+      const trigger = e.target.closest('[data-lightbox-src]');
+      if (!trigger) return;
+      e.preventDefault();
+      openFromTrigger(trigger);
+    });
+
+    closeBtn.addEventListener('click', close);
+    prevBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      prev();
+    });
+    nextBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      next();
+    });
+
+    // Click outside the inner content (i.e. on the dialog padding / backdrop) closes.
+    dialog.addEventListener('click', (e) => {
+      if (e.target === dialog) close();
+    });
+
+    // Arrow-key navigation while open. ESC is handled natively by <dialog>.
+    document.addEventListener('keydown', (e) => {
+      if (!dialog.open) return;
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        prev();
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        next();
+      }
+    });
+  })();
+</script>
