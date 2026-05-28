@@ -3,10 +3,10 @@ Never say "I don't know"
 I was a week into my first internship at Amazon, in Hyderabad, when my manager asked me a question I couldn't answer.
 I said "I don't know."
 He paused, the way managers pause when they're about to give you advice they've given before. Then he said: Never say "I don't know." Say "let me get back to you on this." Then go do the research, and come back with the answer.
-I nodded the way interns nod. I filed it under things-managers-say — not literally; keeping an actual list of things-managers-say would be its own kind of unwell. I went back to my desk and got back to him on whatever it was, probably worse than I would now, and probably better than I think I did.
+I nodded the way interns nod. I filed it under things-managers-say, not literally; keeping an actual list of things-managers-say would be its own kind of unwell. I went back to my desk and got back to him on whatever it was, probably worse than I would now, and probably better than I think I did.
 I'm telling you this ten years later because it turned out to be the most useful sentence anyone said to me at Amazon.
 
-It's a small piece of advice. It sounds, on first hearing, like a thing you'd tell someone who's about to be in a meeting with a VP — a survival trick, a piece of professional theater. Don't admit ignorance. Buy time. Come back looking competent.
+It's a small piece of advice. It sounds, on first hearing, like a thing you'd tell someone who's about to be in a meeting with a VP, a survival trick, a piece of professional theater. Don't admit ignorance. Buy time. Come back looking competent.
 That's not what it is.
 What it actually is, once you've practiced it for a decade, is a small repeated act of refusing to be done with a question. "I don't know" is a sentence that closes things. The conversation stops, the room moves on, and the question sits where it was. "Let me get back to you" keeps the question alive. It says: I'm taking this with me. I'll come back to it. I'm not going to forget it lives somewhere.
 Over years, the habit compounded into something I couldn't have predicted. The engineers around me who said "let me get back to you" the most weren't necessarily the most senior, or the most credentialed. They were the ones with the most questions still alive in their heads at any given moment. They walked around with a private list of small things they hadn't figured out yet, and they chipped away at it. The work was invisible until it wasn't.
@@ -16,7 +16,7 @@ I think now that the manager who gave me the advice was teaching me something la
 
 The advice has limits.
 There are questions where "I don't know" is the correct answer, and pretending otherwise is worse than the gap. Your manager asks if the project will succeed. "Let me get back to you" is, technically, a lie. You can't research the future. The follow-up meeting in which you pretend you did is one of the dumbest things a calendar can hold.
-There are questions where "let me get back to you" is a kind of lie — where you're not actually going to do the research, you just want the discomfort to pass. I have said it that way more times than I'd like. The advice meant to keep questions open can become the most polished way of letting them die.
+There are questions where "let me get back to you" is a kind of lie, where you're not actually going to do the research, you just want the discomfort to pass. I have said it that way more times than I'd like. The advice meant to keep questions open can become the most polished way of letting them die.
 And there are environments where everyone is performing competence so hard that "I don't know" becomes the rarest and most valuable thing in the room. I learned to say it eventually. I learned to say it slowly. I learned to say it about the things that mattered, where the alternative was a worse and more expensive false confidence.
 
 ------------

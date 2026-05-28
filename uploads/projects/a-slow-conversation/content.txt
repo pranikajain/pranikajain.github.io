@@ -1,11 +1,11 @@
 # A Slow Conversation
 
-*An interactive generative sketchbook — you draw, it draws back.*
+*An interactive generative sketchbook. You draw, it draws back.*
 
 *[ preview images: 1.tonesunfinished.png, 2.tonesfinished.png, 3.tangles.png, 4.mandalas.png]*
 
-Most generative art runs on its own. This one waits for you. You draw a mark and pause; it finds the shapes your lines have enclosed and quietly fills them with pattern, then waits for your next move. Draw, pause, watch it answer, draw again — an unhurried back-and-forth between a hand and a machine.
+Most generative art runs on its own. This one waits for you. You draw a mark and pause; it finds the shapes your lines have enclosed and quietly fills them with pattern, then waits for your next move. Draw, pause, watch it answer, draw again, an unhurried back-and-forth between a hand and a machine.
 
-Built with vanilla Canvas2D — no framework, no build step.
+Built with vanilla Canvas2D, no framework, no build step.
 
 **→ [Try it](LIVE_URL)**  ·  **[Read the story behind it](BLOG_URL)**

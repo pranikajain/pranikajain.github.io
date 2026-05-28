@@ -1,7 +1,7 @@
 # uploads/
 
 Drop new content here. This is the source of truth for everything Pranika
-writes or photographs. Nothing in `uploads/` is served by the site — it's
+writes or photographs. Nothing in `uploads/` is served by the site; it's
 just where originals live. The site reads from `public/` (processed images,
 rendered MDX, etc.). Once you drop something here, ask Claude to process
 it and it'll show up on the site.
@@ -11,7 +11,7 @@ it and it'll show up on the site.
 | Folder         | What goes in                                                                                                   |
 | -------------- | -------------------------------------------------------------------------------------------------------------- |
 | `profile/`     | Your profile photo (one image, shown on Home and About).                                                       |
-| `aboutme/`     | The About-me bio. One text file, edit any time — Claude will re-sync `src/pages/about.astro` from it.          |
+| `aboutme/`     | The About-me bio. One text file, edit any time. Claude will re-sync `src/pages/about.astro` from it.          |
 | `blog/`        | Blog post drafts. Filename `MMDDYYYY.txt`; first line = title; rest = body. Use `------------` for HR breaks.  |
 | `of-hands-and-hours/` | For the *Of hands and hours* page: sketchbook pages, paintings, drawings, resin, magnets, anything made by hand. |
 | `to-see-and-to-see-again/` | For the *To See, and to See Again.* page. One subfolder per day (`MMDDYYYY/`), two photos + a `Metadata.txt` per day. |
@@ -35,4 +35,4 @@ it and it'll show up on the site.
 | `uploads/summer/dayN/<file>` | `public/images/summer/day-NN-<name>.jpg` + MDX in `src/content/projects/photography` |
 
 Originals stay in `uploads/` so re-processing is always safe. Don't edit
-files in `public/` directly — re-drop into `uploads/` and re-process.
+files in `public/` directly. Re-drop into `uploads/` and re-process.
